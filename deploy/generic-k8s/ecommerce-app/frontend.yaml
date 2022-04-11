@@ -47,14 +47,17 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.labels['tags.datadoghq.com/env']
-        - name: DD_ANALYTICS_ENABLED
+        - name: DD_SERVICE
+          value: store-frontend
+        - name: DD_VERSION
+          value: "1.5.3"
+        - name: DD_LOGS_INJECTION
           value: "true"
-        # Enable RUM
-        # - name: DD_CLIENT_TOKEN
-        #   value: <your_client_token>
-        # - name: DD_APPLICATION_ID
-        #   value: <your_application_id>
-        image: ddtraining/ecommerce-frontend:latest
+#        - name: DD_CLIENT_TOKEN
+#          value: your_client_token
+#        - name: DD_APPLICATION_ID
+#          value: your_application_id
+        image: zsjung/store-frontend-instrumented-fixed:v1.7
         imagePullPolicy: Always
         name: ecommerce-spree-observability
         ports:
@@ -75,13 +78,15 @@ metadata:
   name: frontend
 spec:
   ports:
-    - port: 80
-      protocol: TCP
-      targetPort: 3000
+    - port: 3000
       name: http
+#      protocol: TCP
+#      targetPort: 3000
+#      name: http
   selector:
     service: frontend
     app: ecommerce
   # Change this value to LoadBalancer for better public ingress routing to this
   # pod on most k8s platforms.
-  type: ClusterIP
+#  type: ClusterIP
+  type: LoadBalancer

@@ -38,15 +38,15 @@ spec:
                 name: db-password
           - name: POSTGRES_USER
             value: "user"
-          - name: DATADOG_SERVICE_NAME
+          - name: DD_SERVICE
             value: "discountsservice"
           - name: DD_AGENT_HOST
             valueFrom:
               fieldRef:
                 fieldPath: status.hostIP
+          - name: DD_VERSION
+            value: "2.3.1"
           - name: DD_LOGS_INJECTION
-            value: "true"
-          - name: DD_ANALYTICS_ENABLED
             value: "true"
           - name: DD_PROFILING_ENABLED
             value: "true"
