@@ -26,6 +26,7 @@ spec:
         tags.datadoghq.com/version: "2.0.16"
       annotations:
         ad.datadoghq.com/advertisements.logs: '[{"source": "python","service": "advertisements","tags": ["env:ruby-shop"]}]'
+        ad.datadoghq.com/tags: '{"git.commit.sha": "<FULL_GIT_COMMIT_SHA>", "git.repository_url": "github.com/creator-dk84/ecommerce"}'
     spec:
       containers:
       - image: ddtraining/advertisements-service:latest
