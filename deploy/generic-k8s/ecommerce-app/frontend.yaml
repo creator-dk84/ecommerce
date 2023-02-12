@@ -5,6 +5,8 @@ metadata:
     service: frontend
     app: ecommerce
     tags.datadoghq.com/env: "ruby-shop"
+    tags.datadoghq.com/service: "frontend"
+    tags.datadoghq.com/version: "1.53"
   name: frontend
 spec:
   replicas: 1
@@ -23,6 +25,10 @@ spec:
         service: frontend
         app: ecommerce
         tags.datadoghq.com/env: "ruby-shop"
+        tags.datadoghq.com/service: "frontend"
+        tags.datadoghq.com/version: "1.53"
+      annotations:
+        ad.datadoghq.com/ecommerce-spree-observability.logs: '[{"source": "ruby", "service": "frontend", "tags": ["env:ruby-shop"]}]'
     spec:
       containers:
       - args:
@@ -37,10 +43,8 @@ spec:
             secretKeyRef:
               key: pw
               name: db-password
-        - name: DD_AGENT_HOST
-          valueFrom:
-            fieldRef:
-              fieldPath: status.hostIP
+        - name: DD_TRACE_AGENT_URL
+          value: 'unix:///var/run/datadog/apm.socket'
         - name: DD_LOGS_INJECTION
           value: "true"
         - name: DD_ENV
@@ -48,15 +52,16 @@ spec:
             fieldRef:
               fieldPath: metadata.labels['tags.datadoghq.com/env']
         - name: DD_SERVICE
-          value: frontend
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['tags.datadoghq.com/service']
         - name: DD_VERSION
-          value: "1.5.3"
-        - name: DD_LOGS_INJECTION
-          value: "true"
-#        - name: DD_CLIENT_TOKEN
-#          value: your_client_token
-#        - name: DD_APPLICATION_ID
-#          value: your_application_id
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['tags.datadoghq.com/version']
+        volumeMounts:
+        - name: apmsocketpath
+          mountPath: /var/run/datadog/
         image: zsjung/store-frontend-instrumented-fixed:v1.7
         imagePullPolicy: Always
         name: ecommerce-spree-observability
@@ -68,6 +73,10 @@ spec:
             cpu: 100m
             memory: 100Mi
           limits: {}
+      volumes:
+        - hostPath:
+            path: /var/run/datadog/
+          name: apmsocketpath
 ---
 apiVersion: v1
 kind: Service
